@@ -151,3 +151,133 @@ Swift还提供了一个变量给`@objc`，让类在OC中有个特殊别名，可
 	    @objc(hideNuts:inTree:)
 	    func прячьОрехи(Int, вДереве: Дерево) { /*...*/ }
 	}
+
+引用-[Swift和Objective-C如何兼顾？且看@objc和Dynamic](http://mobile.51cto.com/hot-465065.htm)-开始
+		
+	Objective-C 和 Swift 在底层使用的是两套完全不同的机制，Cocoa 中的 Objective-C 对象是基于运行时的，它从骨子里遵循了 KVC (Key-Value Coding，通过类似字典的方式存储对象信息) 以及动态派发 (Dynamic Dispatch，在运行调用时再决定实际调用的具体实现)。而 Swift 为了追求性能，如果没有特殊需要的话，是不会在运行时再来决定这些的。也就是说，Swift 类型的成员或者方法在编译时就已经决定，而运行时便不再需要经过一次查找，而可以直接使用。
+	
+引用结束---
+
+动态派发一般是不是必要的，可是，你必须用**dynamic**来修饰你知道的动态派发的地方。
+
+
+####OC Selectors
+
+OC的selector作为一个方法的类型，在Swift中用Selector结构体代替，你能创建一个selector像这样：*let mySelector: Selector = "tappedButton:”*
+
+例子：
+
+	import UIKit
+	class MyViewController: UIViewController {
+	    let myButton = UIButton(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+	    
+	    init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
+	        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+	        myButton.addTarget(self, action: "tappedButton:", forControlEvents: .TouchUpInside)
+	    }
+	    
+	    func tappedButton(sender: UIButton!) {
+	        println("tapped button")
+	    }
+	}
+
+如果你的方法集成OC类，所有的方法都可以直接使用selector，不然，你需要使用*@objc*属性标记。
+
+
+###用OC的方式写Swift类
+
+####集成OC类
+
+在Swift中，你可以在Swift类名后添加（：+ OC类名）来集成OC的某个类。
+
+	import UIKit
+	 
+	class MySwiftViewController: UIViewController {
+	    // define the class
+	}
+这样你能获取到所有的OC方法。如果你像重写某个方法，使用*override*关键字。
+
+####使用OC类的协议
+
+在父类后面直接使用OC协议
+
+	class MySwiftViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+	    // define the class
+	}
+OC的协议相当于Swift的协议，如果你想在Swift里使用*UITableViewDelegate*协议，就直接使用*UITableViewDelegate*
+
+因为命名空间的类和协议已经映射到Swift里。
+
+####初始化器和释放器
+
+在Swift中没有给你实现初始化器，你需要实现初始化方法。
+
+###集成Interface Builder
+
+在Swift编译器中包括了Interface Builder的功能，你可以使用 outlets，actions和live显示。
+
+####Outlets 和 Actions
+	
+outlets和actions可以将你的代码和Interface Builder连接起来。在属性或方法前插入*@IBOutlet*或*@IBAction*实现。你能使用*@IBOutlet*来连接一个集合，比如一个特殊的数组。
+
+	class MyViewController: UIViewController {
+	    @IBOutlet weak var button: UIButton!
+	    @IBOutlet var textFields: [UITextField]!
+	    @IBAction func buttonTapped(AnyObject) {
+	        println("button tapped!")
+	    }
+	}
+
+#### Live Rendering（渲染？）
+你可以使用连个不同的属性*IBDesignable*和*@IBInspectable*来使一个自定义view展现在Interface Builder上。
+你可以在一个继承自UIView或NSView的类前加入*@IBDesignable*属性，然后可将此view加入IB中，IB将显示你的view。
+
+你可以在属性变量前使用*@IBInspectable*，这样你能在检查器里编辑这些属性。
+
+	@IBDesignable
+	class MyCustomView: UIView {
+	    @IBInspectable var textColor: UIColor
+	    @IBInspectable var iconHeight: CGFloat
+	    /* ... */
+	}	
+
+####Property属性说明
+
+Swift的属性默认是strong，用*weak*来表示属性为week。
+
+####Read/Write和只读
+在Swift中没有readwrite和readonly属性。
+一个对象属性，使用*let*表示只读，使用*var*表示可以读写。
+一个计算属性，实现一个get方法来提供只读。
+
+####Copy语义
+
+在Swift中，copy属性就是*@NSCopying*协议，实现协议来实现copy。
+
+###使用Core Data 
+Core Data提供
+
+###OC中使用Swift类名
+
+
+###使用Cocoa数据类型
+
+####字符串
+
+####本地化
+
+####数值
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
